@@ -150,6 +150,23 @@ Cadical::Cadical(const SolverSetup& setup)
 #endif
 }
 
+Cadical::Cadical(const SolverSetup& setup, CaDiCaL::ExternalPropagator* user_propagator, const int num_observed_vars) : Cadical(setup) {
+#if MALLOB_USE_CADICAL
+	if (_optimizer) {
+		assert(false);
+	}
+#endif
+	_user_propagator.reset(user_propagator);
+	solver->connect_external_propagator(user_propagator);
+	for (int var = 1; var <= num_observed_vars; ++var) {
+		solver->add_observed_var(var);
+	}
+}
+
+Cadical::~Cadical() {
+// 	solver->disconnect_external_propagator();
+}
+
 void Cadical::addLiteral(int lit) {
 	solver->add(lit);
 }

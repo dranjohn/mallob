@@ -105,6 +105,9 @@ struct SolverSetup {
 
 
 	// Optimization and theories
+	int userPropagatorId;
+	int numObservedVars;
+	std::string userPropagatorInfo;
 
 	std::vector<std::pair<long, int>> objectiveFunction;
 };

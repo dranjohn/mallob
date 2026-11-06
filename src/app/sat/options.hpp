@@ -128,3 +128,8 @@ OPTION_GROUP(grpAppSatProof, "app/sat/proof", "Production of UNSAT proofs")
  OPT_STRING(injectProofData, "ipd", "inject-proof-data", "", "Specify directory with clauseepochs.X and proof.X.lrat files to use for immediate proof assembly")
  OPT_STRING(coreOutputFile, "core", "", "", "[Only with -proof=...] Output an UNSAT core to the specified path")
  OPT_INT(proofCompressionMode, "pcm", "proof-compression-mode", 0, 0, 2, "0: No compression; 1: xz compression; 2: Vaskin-Goetz compression")
+
+OPTION_GROUP(grpAppSatUserPropagators, "app/sat/up", "Options for user propagators")
+ OPT_INT(userPropagatorId,                "upid", "user-propagator-id", 0, 0, 1, "The id of the user propagator to use. Requires -satsolver=C.")
+ OPT_INT(numObservedVars,                  "upvars", "user-propagators-vars", 0, 0, 1'000'000'000, "The number of variables observed by the user propagator. When set to n, the variables from 1 to n are observed.")
+ OPT_STRING(userPropagatorInfo,                  "upinfo", "user-propagators-info", "", "The path to a file containing additional information required by the user propagator. This could for example be a description of a graph.")

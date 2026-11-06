@@ -43,10 +43,11 @@ private:
 	std::string profileFileString;
 	pid_t compressorPid {-1};
 
-	std::unique_ptr<OptimizingPropagator> optimizer;
-
+	std::unique_ptr<CaDiCaL::ExternalPropagator> _user_propagator;
 public:
 	Cadical(const SolverSetup& setup);
+	Cadical(const SolverSetup& setup, CaDiCaL::ExternalPropagator* user_propagator, const int num_observed_vars);
+	~Cadical();
 
 	// Add a (list of) permanent clause(s) to the formula
 	void addLiteral(int lit) override;

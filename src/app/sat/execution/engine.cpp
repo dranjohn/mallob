@@ -58,6 +58,8 @@ class LratConnector;
 #include <string>
 #include <utility>
 
+#include "../solvers/user_propagators/user_propagator.hpp"
+
 using namespace SolvingStates;
 
 SatEngine::SatEngine(const Parameters& params, const SatProcessConfig& config, Logger& loggingInterface) : 
@@ -252,6 +254,10 @@ SatEngine::SatEngine(const Parameters& params, const SatProcessConfig& config, L
 	setup.memoryFactor = numOrigSolvers / (float)_num_active_solvers;
 	setup.objectiveFunction = _objective;
 
+	setup.userPropagatorId = params.userPropagatorId();
+	setup.numObservedVars = params.numObservedVars();
+	setup.userPropagatorInfo = params.userPropagatorInfo();
+
 	// Pre-create PalRUP proof directories for *all* solver IDs, including cancelled ones.
 	if (params.palRup()) for (setup.localId = 0; setup.localId < numOrigSolvers; setup.localId++) {
 		setup.globalId = appRank * numOrigSolvers + setup.localId;
@@ -317,6 +323,10 @@ SatEngine::SatEngine(const Parameters& params, const SatProcessConfig& config, L
 }
 
 std::shared_ptr<PortfolioSolverInterface> SatEngine::createSolver(const SolverSetup& setup) {
+	if (setup.userPropagatorId != 0 && setup.solverType != 'c' && setup.solverType != 'C') {
+		LOG(V1_WARN, "User propagators can only be connected to CaDiCaL solvers ('C' or 'c'), but not to '%c'\n", setup.solverType);
+	}
+
 	std::shared_ptr<PortfolioSolverInterface> solver;
 	switch (setup.solverType) {
 #if MALLOB_USE_LINGELING
@@ -332,7 +342,14 @@ std::shared_ptr<PortfolioSolverInterface> SatEngine::createSolver(const SolverSe
 	case 'C':
 		// Cadical
 		LOGGER(_logger, V4_VVER, "S%i : Cadical-%i\n", setup.globalId, setup.diversificationIndex);
-		solver.reset(new Cadical(setup));
+		if (setup.userPropagatorId == 0) {
+			solver.reset(new Cadical(setup));
+		}
+		else {
+			solver.reset(new Cadical(
+				setup, convertIdToUserPropagator(setup.userPropagatorId, setup.userPropagatorInfo), setup.numObservedVars
+			));
+		}
 		break;
 #endif
 #if MALLOB_USE_KISSAT
