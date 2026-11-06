@@ -346,6 +346,7 @@ std::shared_ptr<PortfolioSolverInterface> SatEngine::createSolver(const SolverSe
 			solver.reset(new Cadical(setup));
 		}
 		else {
+			LOGGER(_logger, V4_VVER, "+ UP id=%d\n", setup.userPropagatorId);
 			solver.reset(new Cadical(
 				setup, convertIdToUserPropagator(setup.userPropagatorId, setup.userPropagatorInfo), setup.numObservedVars
 			));

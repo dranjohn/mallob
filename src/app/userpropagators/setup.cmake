@@ -1,0 +1,3 @@
+
+add_custom_target(app_userpropagators ALL)
+add_dependencies(app_userpropagators app_sat)
